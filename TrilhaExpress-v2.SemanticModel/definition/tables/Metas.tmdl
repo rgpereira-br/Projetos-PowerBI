@@ -1,0 +1,55 @@
+table Metas
+	lineageTag: cc9d0a45-3d55-4c26-8241-f61724cbd86f
+
+	column cdVendedor
+		dataType: int64
+		formatString: 0
+		lineageTag: ebb89111-d4b9-4f66-91af-0fa11d026151
+		summarizeBy: sum
+		sourceColumn: cdVendedor
+
+		annotation SummarizationSetBy = Automatic
+
+	column DataMeta
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: ff5a7f7b-a82e-486d-9664-62602a762072
+		summarizeBy: none
+		sourceColumn: DataMeta
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ValorMeta
+		dataType: double
+		lineageTag: 7d8a6715-7434-4ac7-ab6c-009c4e7dae8d
+		summarizeBy: sum
+		sourceColumn: ValorMeta
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Metas = m
+		mode: import
+		source =
+				let
+				    Fonte = Excel.Workbook(File.Contents("C:\Users\rgper\OneDrive\Documents\TI\Cursos\Xperiun\02. Power Query Essencial\BaseDados\Metas.xlsx"), null, true),
+				    Metas_Sheet = Fonte{[Item="Metas",Kind="Sheet"]}[Data],
+				    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Metas_Sheet, [PromoteAllScalars=true]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Cabeçalhos Promovidos",{{"Metas por Vendedor", type any}, {"Column2", type any}, {"Column3", type any}, {"Column4", type any}, {"Column5", type any}, {"Column6", type any}, {"Column7", type any}, {"Column8", type any}, {"Column9", type any}, {"Column10", type any}, {"Column11", type any}, {"Column12", type any}, {"Column13", type any}, {"Column14", type any}, {"Column15", type any}, {"Column16", type any}, {"Column17", type any}, {"Column18", type any}, {"Column19", type any}, {"Column20", type any}, {"Column21", type any}, {"Column22", type any}, {"Column23", type any}, {"Column24", type any}, {"Column25", type any}, {"Column26", type any}}),
+				    #"Linhas Superiores Removidas" = Table.Skip(#"Tipo Alterado",3),
+				    #"Linhas Filtradas" = Table.SelectRows(#"Linhas Superiores Removidas", each ([Metas por Vendedor] <> "Total")),
+				    #"Cabeçalhos Promovidos1" = Table.PromoteHeaders(#"Linhas Filtradas", [PromoteAllScalars=true]),
+				    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Cabeçalhos Promovidos1",{{"cdVendedor", Int64.Type}, {"01/01/2017", type number}, {"01/02/2017", type number}, {"01/03/2017", type number}, {"01/04/2017", type number}, {"01/05/2017", type number}, {"01/06/2017", type number}, {"01/07/2017", type number}, {"01/08/2017", type number}, {"01/09/2017", type number}, {"01/10/2017", type number}, {"01/11/2017", type number}, {"01/12/2017", type number}, {"01/01/2018", type number}, {"01/02/2018", type number}, {"01/03/2018", type number}, {"01/04/2018", type number}, {"01/05/2018", type number}, {"01/06/2018", type number}, {"01/07/2018", type number}, {"01/08/2018", type number}, {"01/09/2018", type number}, {"01/10/2018", type number}, {"01/11/2018", type number}, {"01/12/2018", type number}, {"Total", type number}}),
+				    #"Colunas Removidas" = Table.RemoveColumns(#"Tipo Alterado1",{"Total"}),
+				    #"Outras Colunas Não Dinâmicas" = Table.UnpivotOtherColumns(#"Colunas Removidas", {"cdVendedor"}, "DataMeta", "ValorMeta"),
+				    #"Tipo Alterado2" = Table.TransformColumnTypes(#"Outras Colunas Não Dinâmicas",{{"DataMeta", type date}, {"ValorMeta", type number}})
+				in
+				    #"Tipo Alterado2"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

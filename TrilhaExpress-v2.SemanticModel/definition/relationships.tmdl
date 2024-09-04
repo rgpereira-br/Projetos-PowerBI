@@ -1,0 +1,13 @@
+relationship 7627197a-2eed-4cae-bbbc-10f8e90387af
+	joinOnDateBehavior: datePartOnly
+	fromColumn: dCalendario.Data
+	toColumn: LocalDateTable_e0d959a1-66d2-4d37-a47a-3ec5be7e98a5.Date
+
+relationship dd3133bd-0241-ba51-be6d-5ac3914c9bdf
+	fromColumn: Vendas.DataEmissao
+	toColumn: dCalendario.Data
+
+relationship e50221f9-76bd-a662-5a88-233b853bd9b1
+	fromColumn: Metas.DataMeta
+	toColumn: dCalendario.Data
+

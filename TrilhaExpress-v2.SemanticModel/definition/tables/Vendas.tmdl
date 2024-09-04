@@ -1,0 +1,143 @@
+table Vendas
+	lineageTag: 9b3f4e11-a53b-4d16-9978-d2f23bfd4a4b
+
+	column DataEmissao
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 6ec5e09e-aca8-47ee-9df1-51c5028352e0
+		summarizeBy: none
+		sourceColumn: DataEmissao
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column NFe
+		dataType: string
+		lineageTag: be4eebf1-c856-49df-9ec8-75dbdacac8b5
+		summarizeBy: none
+		sourceColumn: NFe
+
+		annotation SummarizationSetBy = Automatic
+
+	column cdProduto
+		dataType: int64
+		formatString: 0
+		lineageTag: 03b7af93-54e8-44a1-917d-cc83f7962cc7
+		summarizeBy: sum
+		sourceColumn: cdProduto
+
+		annotation SummarizationSetBy = Automatic
+
+	column Produto
+		dataType: string
+		lineageTag: 32326a5c-8a5e-4943-9788-29e527ada45a
+		summarizeBy: none
+		sourceColumn: Produto
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Grupo Produto'
+		dataType: string
+		lineageTag: eae47982-ffe1-4bf7-9834-c523acfc844a
+		summarizeBy: none
+		sourceColumn: Grupo Produto
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Linha Produto'
+		dataType: string
+		lineageTag: cfa7675d-6edd-444f-a033-f976e0b0f203
+		summarizeBy: none
+		sourceColumn: Linha Produto
+
+		annotation SummarizationSetBy = Automatic
+
+	column cdVendedor
+		dataType: int64
+		formatString: 0
+		lineageTag: 88de1aae-09d0-4b0f-b15c-0e409255e46c
+		summarizeBy: sum
+		sourceColumn: cdVendedor
+
+		annotation SummarizationSetBy = Automatic
+
+	column Vendedor
+		dataType: string
+		lineageTag: ffe4b912-5fcf-4c6f-a904-fc19f0f9816b
+		summarizeBy: none
+		sourceColumn: Vendedor
+
+		annotation SummarizationSetBy = Automatic
+
+	column Supervisor
+		dataType: string
+		lineageTag: be399a77-65e3-497c-b8e1-12fb89b9c67b
+		summarizeBy: none
+		sourceColumn: Supervisor
+
+		annotation SummarizationSetBy = Automatic
+
+	column Gerente
+		dataType: string
+		lineageTag: 2a3d8d48-4651-43c9-b8fa-40dd4cd6b217
+		summarizeBy: none
+		sourceColumn: Gerente
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Equipe Vendas'
+		dataType: string
+		lineageTag: a01c8cfe-75cd-4bec-96b4-f9ae220fd4fa
+		summarizeBy: none
+		sourceColumn: Equipe Vendas
+
+		annotation SummarizationSetBy = Automatic
+
+	column QtdItens
+		dataType: int64
+		formatString: #,0
+		lineageTag: bca09f70-fa1d-4b45-b505-0b1cc9326450
+		summarizeBy: sum
+		sourceColumn: QtdItens
+
+		annotation SummarizationSetBy = Automatic
+
+	column ValorUnitario
+		dataType: double
+		lineageTag: 6f4c3c24-20a7-4c07-8552-86c49aee5cc5
+		summarizeBy: sum
+		sourceColumn: ValorUnitario
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ValorTotal
+		dataType: double
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: 4d5484ce-e68d-4a59-b749-89b3d029a4bf
+		summarizeBy: sum
+		sourceColumn: ValorTotal
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	partition Vendas = m
+		mode: import
+		source =
+				let
+				    Fonte = Excel.Workbook(File.Contents("C:\Users\rgper\OneDrive\Documents\TI\Cursos\Xperiun\02. Power Query Essencial\BaseDados\Vendas.xlsx"), null, true),
+				    Planilha1_Sheet = Fonte{[Item="Planilha1",Kind="Sheet"]}[Data],
+				    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Planilha1_Sheet, [PromoteAllScalars=true]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Cabeçalhos Promovidos",{{"DataEmissao", type date}, {"NFe", type text}, {"cdProduto", Int64.Type}, {"Produto", type text}, {"Grupo Produto", type text}, {"Linha Produto", type text}, {"cdVendedor", Int64.Type}, {"Vendedor", type text}, {"Supervisor", type text}, {"Gerente", type text}, {"Equipe Vendas", type text}, {"QtdItens", Int64.Type}, {"ValorUnitario", type number}}),
+				    #"Personalização Adicionada" = Table.AddColumn(#"Tipo Alterado", "ValorTotal", each [QtdItens] * [ValorUnitario]),
+				    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Personalização Adicionada",{{"ValorTotal", type number}})
+				in
+				    #"Tipo Alterado1"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

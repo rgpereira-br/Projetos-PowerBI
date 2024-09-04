@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "TrilhaExpress-v2"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "cf6eba1c-62c2-4645-9e6d-fb22c87d356b"
+  }
+}

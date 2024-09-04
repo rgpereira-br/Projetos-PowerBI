@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "TrilhaExpress-v2"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "be88d74d-125e-4ec5-b34d-3299c3e0bd34"
+  }
+}

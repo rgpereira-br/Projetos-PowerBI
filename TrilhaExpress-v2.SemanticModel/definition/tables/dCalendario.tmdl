@@ -1,0 +1,92 @@
+table dCalendario
+	lineageTag: 581265c1-4078-40bf-9b0a-96459c249493
+
+	column Data
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: caa9fbe4-cd50-47b8-a6a7-b11461df6f14
+		summarizeBy: none
+		sourceColumn: Data
+
+		variation Variation
+			isDefault
+			relationship: 7627197a-2eed-4cae-bbbc-10f8e90387af
+			defaultHierarchy: LocalDateTable_e0d959a1-66d2-4d37-a47a-3ec5be7e98a5.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Ano
+		dataType: int64
+		formatString: 0
+		lineageTag: 5d2fda4e-68d0-4381-8a87-3d690291892f
+		summarizeBy: sum
+		sourceColumn: Ano
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mês
+		dataType: int64
+		formatString: 0
+		lineageTag: b26ce440-2880-43e6-870d-1515ead2c5ad
+		summarizeBy: sum
+		sourceColumn: Mês
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Nome do Mês'
+		dataType: string
+		lineageTag: 7b0dcf2f-19fd-497c-b575-05ec61c2fe4d
+		summarizeBy: none
+		sourceColumn: Nome do Mês
+
+		annotation SummarizationSetBy = Automatic
+
+	column Dia
+		dataType: int64
+		formatString: 0
+		lineageTag: f8522e0c-57d0-4b3b-937d-031cca7e3a12
+		summarizeBy: sum
+		sourceColumn: Dia
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Nome do Dia'
+		dataType: string
+		lineageTag: 207316b7-5e11-42b8-ae0f-51f75329f2ae
+		summarizeBy: none
+		sourceColumn: Nome do Dia
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mês/Ano
+		dataType: string
+		lineageTag: 62d1771c-9fe1-45ad-98fe-dfee13264157
+		summarizeBy: none
+		sourceColumn: Mês/Ano
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dCalendario = m
+		mode: import
+		source =
+				let
+				    Fonte = Consulta1(#date(2017, 1, 1), 1097, #duration(1, 0, 0, 0)),
+				    #"Convertido para Tabela" = Table.FromList(Fonte, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+				    #"Colunas Renomeadas" = Table.RenameColumns(#"Convertido para Tabela",{{"Column1", "Data"}}),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Colunas Renomeadas",{{"Data", type date}}),
+				    #"Ano Inserido" = Table.AddColumn(#"Tipo Alterado", "Ano", each Date.Year([Data]), Int64.Type),
+				    #"Mês Inserido" = Table.AddColumn(#"Ano Inserido", "Mês", each Date.Month([Data]), Int64.Type),
+				    #"Nome do Mês Inserido" = Table.AddColumn(#"Mês Inserido", "Nome do Mês", each Date.MonthName([Data]), type text),
+				    #"Dia Inserido" = Table.AddColumn(#"Nome do Mês Inserido", "Dia", each Date.Day([Data]), Int64.Type),
+				    #"Nome do Dia Inserido" = Table.AddColumn(#"Dia Inserido", "Nome do Dia", each Date.DayOfWeekName([Data]), type text),
+				    #"Coluna Personalizada Adicionada" = Table.AddColumn(#"Nome do Dia Inserido", "Personalizar", each Text.Combine({Text.Start(Text.Proper([Nome do Mês]), 3), "/", Text.From([Ano], "pt-BR")}), type text),
+				    #"Colunas Renomeadas1" = Table.RenameColumns(#"Coluna Personalizada Adicionada",{{"Personalizar", "Mês/Ano"}})
+				in
+				    #"Colunas Renomeadas1"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+
